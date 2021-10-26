@@ -1,4 +1,4 @@
-import { InputType, Field, Int, PartialType, OmitType } from '@nestjs/graphql';
+import { InputType, PartialType, OmitType } from '@nestjs/graphql';
 import { MinLength, MaxLength, Min, Max } from 'class-validator';
 import { User } from '../entities/user.entity';
 // import { UpdateUserInput } from './update-user.input';
