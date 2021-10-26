@@ -4,6 +4,7 @@ import { UserService } from './user.service';
 import { User } from './entities/user.entity';
 import { UserInput } from './dto/user.input';
 import { ParseObjectIdPipe } from 'src/utils/parseId.pipe';
+import { NotFoundException } from '@nestjs/common';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -11,17 +12,19 @@ export class UserResolver {
 
   @Mutation(() => User)
   async createUser(@Args('userInput') userInput: UserInput) {
-    return this.userService.create(userInput);
+    return await this.userService.create(userInput);
   }
 
-  @Query(() => [User])
+  @Query(() => [User], {nullable: true})
   async getUsers() {
-    return this.userService.findAll();
+    return await this.userService.findAll();
   }
 
   @Query(() => User)
   async getUser(@Args('id', { type: () => String }, ParseObjectIdPipe) _id: ObjectId) {
-    return this.userService.findOne(_id);
+    const res = await this.userService.findOne(_id);
+    if (!res) throw new NotFoundException();
+    return res;
   }
 
   @Mutation(() => User)
@@ -29,11 +32,15 @@ export class UserResolver {
     @Args('_id', { type: () => String }, ParseObjectIdPipe) _id: ObjectId,
     @Args('userInput') userInput: UserInput,
     ) {
-    return this.userService.update(_id, userInput);
+    const res = await this.userService.update(_id, userInput);
+    if (!res) throw new NotFoundException();
+    return res;
   }
 
   @Mutation(() => User)
   async removeUser(@Args('_id', { type: () => String }, ParseObjectIdPipe) _id: ObjectId) {
-    return this.userService.remove(_id);
+    const res = await this.userService.remove(_id);
+    if (!res) throw new NotFoundException();
+    return res;
   }
 }
